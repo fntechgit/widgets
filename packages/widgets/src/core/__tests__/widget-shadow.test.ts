@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect, afterEach } from 'vitest';
-import { createWidgetShadow } from '../widget-shadow';
+import { createWidgetShadow, demoteRootSelectors } from '../widget-shadow';
 import type { WidgetManifest } from '../manifest';
 import type { VendorSheet } from '../vendor-sheet';
 import { registerHostConfig } from '../host-config';
@@ -65,6 +65,37 @@ describe('createWidgetShadow vendor sheets', () => {
     const tags = document.head.querySelectorAll('style[data-widget-portal-css="portal"]');
     expect(tags).toHaveLength(1);
     expect(tags[0].textContent).toContain('.portal-probe');
+  });
+
+  it("does not let a portal sheet's :root token defaults override the host's tokens", () => {
+    // Host brand tokens, declared before the widget mounts (the normal SSR order).
+    const hostTokens = document.createElement('style');
+    hostTokens.textContent = ':root { --color_primary: #8dc63f; }';
+    document.head.appendChild(hostTokens);
+
+    mount({
+      portalSheets: [
+        makeSheet('tokens', { css: ':root {\n  --color_primary: #000000;\n}\n.tokens-probe { color: var(--color_primary); }' }),
+      ],
+    });
+
+    expect(getComputedStyle(document.documentElement).getPropertyValue('--color_primary').trim()).toBe('#8dc63f');
+    const injected = document.head.querySelector('style[data-widget-portal-css="tokens"]');
+    expect(injected?.textContent).toContain(':where(:root)');
+    hostTokens.remove();
+  });
+});
+
+describe('demoteRootSelectors', () => {
+  it('wraps :root selectors, including in selector lists and compounds', () => {
+    expect(demoteRootSelectors(':root{--a:1}')).toBe(':where(:root){--a:1}');
+    expect(demoteRootSelectors('html, :root .x{}')).toBe('html, :where(:root) .x{}');
+    expect(demoteRootSelectors(':root[data-theme=DARK]{}')).toBe(':where(:root)[data-theme=DARK]{}');
+  });
+
+  it('is idempotent and leaves unrelated text alone', () => {
+    expect(demoteRootSelectors(':where(:root){}')).toBe(':where(:root){}');
+    expect(demoteRootSelectors('.rooted{} .x:root-ish{}')).toBe('.rooted{} .x:root-ish{}');
   });
 });
 

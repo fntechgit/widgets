@@ -69,8 +69,29 @@ function injectFontFaces(sheet: VendorSheet): void {
 /** Portal-sheet ids already injected into document.head. */
 const injectedPortalIds = new Set<string>();
 
+/**
+ * Widget stylesheets ship design-token defaults on `:root` (my-orders-tickets:
+ * `:root { --color_primary: #000000; --color_secondary: #00a2ff; … }`). Inside a
+ * shadow root `:root` never matches, so they are inert there — but a portal
+ * sheet is injected into document.head, where they match the host's <html>.
+ * Appended after the host's own token block, equal specificity lets the widget
+ * repaint the whole host site with its defaults.
+ *
+ * `:where(:root)` has zero specificity: any host `:root { … }` wins regardless
+ * of order, and the defaults still apply to portaled markup when the host
+ * declares nothing.
+ */
+export function demoteRootSelectors(css: string): string {
+  return css.replace(/(?<!:where\()(:root)(?![\w-])/g, ':where(:root)');
+}
+
 function injectPortalSheet(sheet: VendorSheet): void {
-  injectHeadStyleOnce(injectedPortalIds, 'data-widget-portal-css', sheet.id, sheet.css);
+  injectHeadStyleOnce(
+    injectedPortalIds,
+    'data-widget-portal-css',
+    sheet.id,
+    demoteRootSelectors(sheet.css),
+  );
 }
 
 // Unregistered custom elements default to display:inline, which collapses

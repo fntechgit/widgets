@@ -80,9 +80,82 @@ const injectedPortalIds = new Set<string>();
  * `:where(:root)` has zero specificity: any host `:root { … }` wins regardless
  * of order, and the defaults still apply to portaled markup when the host
  * declares nothing.
+ *
+ * Only selector preludes are rewritten — the text a `{` closes. Declaration
+ * values (ended by `;` or `}`), strings, comments, `url(…)` and escaped
+ * characters (`.\:root`) pass through untouched, at any nesting depth
+ * (`@media`, `@supports`, CSS nesting).
  */
 export function demoteRootSelectors(css: string): string {
-  return css.replace(/(?<!:where\()(:root)(?![\w-])/g, ':where(:root)');
+  let out = '';
+  let segment = ''; // text since the last structural `{`, `}` or `;`
+  for (let i = 0; i < css.length; ) {
+    const opaque = opaqueTokenLength(css, i);
+    if (opaque > 0) {
+      segment += css.slice(i, i + opaque);
+      i += opaque;
+      continue;
+    }
+    const ch = css[i];
+    if (ch === '{') {
+      out += rewriteRootInPrelude(segment) + ch;
+      segment = '';
+    } else if (ch === '}' || ch === ';') {
+      out += segment + ch;
+      segment = '';
+    } else {
+      segment += ch;
+    }
+    i += 1;
+  }
+  return out + segment;
+}
+
+/** Wrap each unescaped, unquoted `:root` pseudo-class in one selector prelude. */
+function rewriteRootInPrelude(prelude: string): string {
+  let result = '';
+  for (let i = 0; i < prelude.length; ) {
+    const opaque = opaqueTokenLength(prelude, i);
+    if (opaque > 0) {
+      result += prelude.slice(i, i + opaque);
+      i += opaque;
+    } else if (
+      prelude.startsWith(':root', i) &&
+      !/[\w-]/.test(prelude[i + 5] ?? '') &&
+      !result.endsWith(':where(')
+    ) {
+      result += ':where(:root)';
+      i += 5;
+    } else {
+      result += prelude[i];
+      i += 1;
+    }
+  }
+  return result;
+}
+
+/**
+ * Length of the token at `at` whose contents are never structure or selectors:
+ * an escape (`\:`), a string, a comment or `url(…)`. 0 when `at` starts none.
+ */
+function opaqueTokenLength(text: string, at: number): number {
+  const ch = text[at];
+  if (ch === '\\') return Math.min(2, text.length - at);
+  if (ch === '"' || ch === "'") {
+    let j = at + 1;
+    while (j < text.length && text[j] !== ch) j += text[j] === '\\' ? 2 : 1;
+    return Math.min(j + 1, text.length) - at;
+  }
+  if (ch === '/' && text[at + 1] === '*') {
+    const end = text.indexOf('*/', at + 2);
+    return (end === -1 ? text.length : end + 2) - at;
+  }
+  if (/^url\(/i.test(text.slice(at, at + 4))) {
+    let j = at + 4;
+    while (j < text.length && text[j] !== ')') j += Math.max(1, opaqueTokenLength(text, j));
+    return Math.min(j + 1, text.length) - at;
+  }
+  return 0;
 }
 
 function injectPortalSheet(sheet: VendorSheet): void {

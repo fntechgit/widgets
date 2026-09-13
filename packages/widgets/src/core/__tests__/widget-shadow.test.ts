@@ -97,6 +97,30 @@ describe('demoteRootSelectors', () => {
     expect(demoteRootSelectors(':where(:root){}')).toBe(':where(:root){}');
     expect(demoteRootSelectors('.rooted{} .x:root-ish{}')).toBe('.rooted{} .x:root-ish{}');
   });
+
+  it('rewrites selectors inside at-rules and nested rules', () => {
+    expect(demoteRootSelectors('@media (min-width: 1px) { :root { --a: 1; } }'))
+      .toBe('@media (min-width: 1px) { :where(:root) { --a: 1; } }');
+    expect(demoteRootSelectors('.x { color: red; :root & { color: blue; } }'))
+      .toBe('.x { color: red; :where(:root) & { color: blue; } }');
+  });
+
+  it('never touches declaration values, strings, comments, url() or escaped selectors', () => {
+    const untouched = [
+      '.a::before { content: ":root"; }',
+      ".a::before { content: ':root { }'; }",
+      '.\\:root { color: red; }',
+      '/* :root { --x: 1 } */ .a { color: red; }',
+      '.a { background: url(/img/:root.png); }',
+      '.a { --label: :root; }',
+    ];
+    for (const css of untouched) expect(demoteRootSelectors(css)).toBe(css);
+  });
+
+  it('keeps the rewrite alongside untouched neighbours in one sheet', () => {
+    expect(demoteRootSelectors(':root { --a: 1; } .a::before { content: ":root {"; } .b { }'))
+      .toBe(':where(:root) { --a: 1; } .a::before { content: ":root {"; } .b { }');
+  });
 });
 
 describe('bridge lifecycle', () => {

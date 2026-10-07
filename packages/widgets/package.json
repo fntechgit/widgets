@@ -89,7 +89,7 @@
     "lodash": "^4.18.1",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.48",
-    "my-orders-tickets-widget": "1.0.18",
+    "my-orders-tickets-widget": "1.0.22",
     "openstack-uicore-foundation": "4.2.34",
     "react-bootstrap": "^0.33.1",
     "react-datetime": "^2.16.2",

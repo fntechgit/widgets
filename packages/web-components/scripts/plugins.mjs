@@ -125,9 +125,9 @@ export const myTicketsFontPlugin = {
 
 // Shared variant: leave every runtime-served specifier as a bare import the
 // browser resolves through the host's import map. uicore css imports become
-// empty modules (vendor CSS is adopted into the shadow separately); uicore
-// paths the runtime doesn't serve (single-consumer modules) fall through and
-// bundle locally, as do @mui specifiers outside the served surface.
+// empty modules (vendor CSS is adopted into the shadow separately);
+// specifiers outside the served surface (bare @mui roots, unshared packages)
+// fall through and bundle locally.
 export const sharedExternals = (sharedSpecifiers) => ({
   name: 'shared-externals',
   setup(build) {
@@ -141,31 +141,17 @@ export const sharedExternals = (sharedSpecifiers) => ({
       // resolves them via the import map. CJS require() calls (the webpack-UMD
       // widget dists) cannot dynamically require an ESM external, so they go
       // through a tiny bridge module that imports the external and hands its
-      // runtime shape (`default ?? namespace`) back as module.exports.
+      // CJS shape (src/shims/require-exports.js) back as module.exports.
       if (args.kind === 'require-call') {
         return { path: args.path, namespace: 'ext-require-bridge' };
       }
       return { path: args.path, external: true };
     });
     build.onLoad({ filter: /.*/, namespace: 'ext-require-bridge' }, (args) => ({
-      // require() callers expect the CJS shape. Three cases:
-      // - default only (CJS whole-exports): hand over the default.
-      // - default + named (browser-ESM component modules): a merged
-      //   { __esModule, default, ...named } object, so BOTH
-      //   _interopRequireDefault(require(s)).default and require(s).namedThing
-      //   work.
-      // - no default: the namespace itself.
       contents:
         `import * as __ns from ${JSON.stringify(args.path)};\n` +
-        'const __keys = Object.keys(__ns);\n' +
-        'let __out;\n' +
-        'if (__ns.default !== undefined && __keys.length > 1) {\n' +
-        '  __out = { __esModule: true, default: __ns.default };\n' +
-        '  for (const k of __keys) if (k !== "default") __out[k] = __ns[k];\n' +
-        '} else {\n' +
-        '  __out = __ns.default !== undefined ? __ns.default : __ns;\n' +
-        '}\n' +
-        'module.exports = __out;\n',
+        `import { requireExports } from ${JSON.stringify(path.join(pkgRoot, 'src/shims/require-exports.js'))};\n` +
+        'module.exports = requireExports(__ns);\n',
       loader: 'js',
       resolveDir: pkgRoot,
     }));

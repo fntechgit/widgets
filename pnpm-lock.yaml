@@ -317,8 +317,8 @@ importers:
         specifier: ^0.5.48
         version: 0.5.48
       my-orders-tickets-widget:
-        specifier: 1.0.22
-        version: 1.0.22(@mui/system@9.4.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(crypto-js@4.2.0)(i18n-react@0.7.0(react@19.2.8))(idtoken-verifier@2.2.4)(moment@2.30.1)(openstack-uicore-foundation@https://codeload.github.com/gcutrini/openstack-uicore-foundation/tar.gz/d581b993511addf7d594ea9c71af895875c4443e(fe7901f2dd3f9daec47dbaf3be47b81a))(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react-redux@7.2.9(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react@19.2.8)(redux-persist@5.10.0(react@19.2.8)(redux@4.2.1))(redux-thunk@2.4.2(redux@4.2.1))(redux@4.2.1)(sweetalert2@11.26.25)
+        specifier: 1.0.23
+        version: 1.0.23(@mui/system@9.4.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(crypto-js@4.2.0)(i18n-react@0.7.0(react@19.2.8))(idtoken-verifier@2.2.4)(moment@2.30.1)(openstack-uicore-foundation@https://codeload.github.com/gcutrini/openstack-uicore-foundation/tar.gz/d581b993511addf7d594ea9c71af895875c4443e(fe7901f2dd3f9daec47dbaf3be47b81a))(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react-redux@7.2.9(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react@19.2.8)(redux-persist@5.10.0(react@19.2.8)(redux@4.2.1))(redux-thunk@2.4.2(redux@4.2.1))(redux@4.2.1)(sweetalert2@11.26.25)
       openstack-uicore-foundation:
         specifier: github:gcutrini/openstack-uicore-foundation#deploy
         version: https://codeload.github.com/gcutrini/openstack-uicore-foundation/tar.gz/d581b993511addf7d594ea9c71af895875c4443e(fe7901f2dd3f9daec47dbaf3be47b81a)
@@ -3188,14 +3188,14 @@ packages:
     engines: {node: '>=8', npm: '>=5'}
     hasBin: true
 
-  my-orders-tickets-widget@1.0.22:
-    resolution: {integrity: sha512-IFBdRQ4Jytx263+TmEWFv8rbGAFcQbOCqnRhCgzbOJrVLaySq+U0Ylwt9fZ+QIkX5Buwp1BM9ZhvOjIrmrYs8A==}
-    version: 1.0.22
+  my-orders-tickets-widget@1.0.23:
+    resolution: {integrity: sha512-TqAQNa3A8RIeYCTLdR2PlrCorRi53Pp1lpCtCJT8Xdp4HTFQebvrCUTfvgscPXlJg+p90olNafh89mNtmV4tXA==}
+    version: 1.0.23
     peerDependencies:
       crypto-js: ^4.2.0
       i18n-react: ^0.7.0
       idtoken-verifier: ^2.2.4
-      openstack-uicore-foundation: 4.2.8
+      openstack-uicore-foundation: 4.2.34
       react: ^18.2.0
       react-dom: ^18.2.0
       react-redux: ^7.2.6
@@ -7870,7 +7870,7 @@ snapshots:
       '@babel/runtime': 7.29.7
       global: 4.4.0
 
-  my-orders-tickets-widget@1.0.22(@mui/system@9.4.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(crypto-js@4.2.0)(i18n-react@0.7.0(react@19.2.8))(idtoken-verifier@2.2.4)(moment@2.30.1)(openstack-uicore-foundation@https://codeload.github.com/gcutrini/openstack-uicore-foundation/tar.gz/d581b993511addf7d594ea9c71af895875c4443e(fe7901f2dd3f9daec47dbaf3be47b81a))(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react-redux@7.2.9(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react@19.2.8)(redux-persist@5.10.0(react@19.2.8)(redux@4.2.1))(redux-thunk@2.4.2(redux@4.2.1))(redux@4.2.1)(sweetalert2@11.26.25):
+  my-orders-tickets-widget@1.0.23(@mui/system@9.4.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(crypto-js@4.2.0)(i18n-react@0.7.0(react@19.2.8))(idtoken-verifier@2.2.4)(moment@2.30.1)(openstack-uicore-foundation@https://codeload.github.com/gcutrini/openstack-uicore-foundation/tar.gz/d581b993511addf7d594ea9c71af895875c4443e(fe7901f2dd3f9daec47dbaf3be47b81a))(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react-redux@7.2.9(react-dom@19.2.8(react@19.2.8))(react-native@0.87.1(@babel/core@7.29.7)(@types/react@19.2.18)(react@19.2.8))(react@19.2.8))(react@19.2.8)(redux-persist@5.10.0(react@19.2.8)(redux@4.2.1))(redux-thunk@2.4.2(redux@4.2.1))(redux@4.2.1)(sweetalert2@11.26.25):
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.18)(react@19.2.8)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8)

@@ -34,8 +34,8 @@ non-served `@mui` import from the package's MUI-5 tree.
 
 The served surface is DERIVED from the bundler's own resolution graphs
 (`deriveMuiServed` in `scripts/footprint.mjs`): every `@mui/*` SUBPATH the
-widget graphs import — including imports made inside locally-bundled uicore
-modules such as company-input-v2 — plus the `@emotion` packages policy
+widget graphs import — including imports made inside uicore modules such as
+company-input-v2 — plus the `@emotion` packages policy
 declares shared for their state (`EMOTION_SERVED` in `scripts/policy.mjs`:
 cache + react). Bare package roots are barrels and stay local; other
 `@emotion` helpers are stateless and bundle locally. Nothing is hand-listed,
@@ -57,10 +57,10 @@ enters the served surface.
    a webpack-UMD dist goes through the require-to-import bridge. Non-served
    `@mui` imports bundle locally from the pinned v5 tree.
 3. **The uicore stateful modules** (`lib/utils/config`, `lib/security/methods`)
-   are served the same way, so `company-input-v2` (registration's MUI company
-   field, bundled into `registration.shared.js`) reads config and tokens from
-   the configured shared instances, not fresh empty copies — the widget bundle
-   calls `configureUicore()` on them at load.
+   are served the same way, so `company-input-v2` (uicore's MUI company field,
+   served from the runtime) reads config and tokens from the configured shared
+   instances, not fresh empty copies — the widget bundle calls
+   `configureUicore()` on them at load.
 4. **No loader step** — the module graph pulls MUI chunks by itself.
 
 ## Single-instance requirements

@@ -19,8 +19,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import {
   WIDGETS,
-  UICORE_NEVER_SERVED,
-  UICORE_ALWAYS_SERVED as UICORE_ALWAYS_SERVED_LIST,
+  UICORE_ALWAYS_SERVED,
   STUBBED_NODE_BUILTINS,
   POLYFILLED_NODE_BUILTINS,
   EMOTION_SERVED,
@@ -50,9 +49,6 @@ const WIDGETS_DIR = path.dirname(
 const NODE_BUILTINS = new RegExp(
   `^(node:)?(${[...STUBBED_NODE_BUILTINS, ...POLYFILLED_NODE_BUILTINS].join('|')})$`,
 );
-
-// See policy.mjs. Never reported as unused.
-const UICORE_ALWAYS_SERVED = new Set(UICORE_ALWAYS_SERVED_LIST);
 
 const KNOWN_NEEDS = new Set([...BUILD_ACTIONABLE, ...DECLARED_ONLY]);
 
@@ -161,9 +157,9 @@ async function signatureFor(name) {
     const fromKit =
       file.endsWith('.wc.js') || // the stdin entry
       ((abs.startsWith(WIDGETS_DIR + path.sep) || abs.startsWith(path.resolve(dir, '..') + path.sep)) && !abs.includes(nm));
-    // uicore files count for the MUI surface: modules the runtime does not
-    // serve bundle INTO widgets (company-input-v2 → registration), and their
-    // MUI imports must still resolve through the served surface.
+    // uicore files count for the MUI surface: uicore modules import MUI
+    // themselves (company-input-v2's Autocomplete), and those imports must
+    // resolve through the served surface.
     const fromUicore = abs.includes(`${path.sep}openstack-uicore-foundation${path.sep}`);
     for (const imp of data.imports || []) {
       const spec = imp.original;
@@ -234,14 +230,13 @@ async function signatureFor(name) {
 
 // ─── whole-fleet analysis + drift ────────────────────────────────────────────
 /**
- * The uicore surface the shared runtime SHOULD serve, derived from the widget
- * signatures: every consumed non-CSS uicore path, minus the deliberately
- * never-served modules, plus the always-served stateful modules.
+ * The uicore surface the shared runtime serves, derived from the widget
+ * signatures: every consumed non-CSS uicore path, plus the always-served
+ * stateful modules.
  */
 export function deriveUicoreSurface(sigs) {
   const consumed = new Set();
   for (const s of sigs) for (const p of s.uicore || []) if (!p.includes('/css/')) consumed.add(p);
-  for (const p of UICORE_NEVER_SERVED) consumed.delete(p);
   for (const p of UICORE_ALWAYS_SERVED) consumed.add(p);
   return [...consumed].sort();
 }
@@ -285,20 +280,9 @@ export async function analyzeFleet() {
   const sigs = [];
   for (const w of WIDGETS) sigs.push(await signatureFor(w));
   // build.mjs generates the runtime chunks + import map from these same
-  // derivations, so the served runtime and these checks cannot drift.
+  // derivations, so the served uicore surface cannot drift from what the
+  // widgets import.
   const exposed = new Set(deriveUicoreSurface(sigs));
-
-  // Per-path consumer counts drive the shared-vs-local decision: a path used by
-  // ≥2 widgets belongs in the runtime (else it duplicates across their bundles);
-  // a single-consumer path may be bundled into its one widget (build.mjs does
-  // exactly that for what the runtime doesn't publish).
-  const consumers = {};
-  for (const s of sigs) for (const p of s.uicore || []) if (!p.includes('/css/')) consumers[p] = (consumers[p] || 0) + 1;
-  const neededNonCss = Object.keys(consumers);
-  const unexposed = neededNonCss.filter((p) => !exposed.has(p));
-  const missing = unexposed.filter((p) => consumers[p] >= 2); // multi-consumer, unshared → would duplicate
-  const localized = unexposed.filter((p) => consumers[p] === 1); // single-consumer → bundled into its widget (fine)
-  const unused = [...exposed].filter((p) => !consumers[p] && !UICORE_ALWAYS_SERVED.has(p));
   const allUnknown = [...new Set(sigs.flatMap((s) => s.unknown || []))].sort();
   const errored = sigs.filter((s) => s.error);
 
@@ -334,7 +318,7 @@ export async function analyzeFleet() {
   }
 
   return {
-    sigs, exposed, neededNonCss, missing, localized, unused, allUnknown, errored, declIssues,
+    sigs, exposed, allUnknown, errored, declIssues,
     muiExposed, muiUnion, muiMissing, muiUnused, barrelImports,
   };
 }

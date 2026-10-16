@@ -18,19 +18,9 @@ export const WIDGETS = [
 ];
 
 /**
- * Single-consumer uicore modules deliberately kept OFF the shared runtime: they bundle
- * into the one widget that imports them, keeping their deps off the shared
- * runtime.
- */
-export const UICORE_NEVER_SERVED = [
-  'openstack-uicore-foundation/lib/components/inputs/company-input-v2',
-];
-
-/**
  * uicore modules the shared runtime serves for their STATE, not because a widget
- * dist imports them at top level: a uicore module bundled locally into a
- * widget (e.g. company-input-v2 into registration) must reach the configured
- * instance, not a fresh empty copy.
+ * dist imports them at top level: a served uicore module that imports them must
+ * reach the configured instance, not a fresh empty copy.
  */
 export const UICORE_ALWAYS_SERVED = [
   'openstack-uicore-foundation/lib/utils/config',

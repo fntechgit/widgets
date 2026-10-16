@@ -37,7 +37,7 @@ const rel = (p) => path.relative(process.cwd(), p);
 const self = rel(fileURLToPath(import.meta.url));
 
 const {
-  sigs, exposed, neededNonCss, missing, localized, unused, allUnknown, errored, declIssues,
+  sigs, exposed, allUnknown, errored, declIssues,
   muiExposed, muiUnion, muiMissing, muiUnused, barrelImports,
 } = await analyzeFleet();
 
@@ -94,15 +94,11 @@ if (mode === 'check') {
   const newMuiMissing = muiMissing.filter((p) => !acceptedMui.has(p));
   const staleMuiMissing = [...acceptedMui].filter((p) => !muiMissing.includes(p));
 
-  if (errored.length || missing.length || newUnknown.length || declIssues.length || newMuiMissing.length || newBarrels.length) {
+  if (errored.length || newUnknown.length || declIssues.length || newMuiMissing.length || newBarrels.length) {
     console.error('✗ widget runtime-requirements check FAILED\n');
     if (errored.length) {
       console.error('WIDGETS NOT ANALYZABLE:');
       console.error(errored.map((s) => `  ✗ ${s.name}: ${s.error}`).join('\n') + '\n');
-    }
-    if (missing.length) {
-      console.error('MISSING uicore paths (not served by the runtime surface — check policy.mjs):');
-      console.error(missing.map((p) => '  ✗ ' + p).join('\n') + '\n');
     }
     if (declIssues.length) {
       console.error('runtimeNeeds DECLARATION mismatch (manifest vs real footprint):');
@@ -128,7 +124,7 @@ if (mode === 'check') {
     process.exit(1);
   }
   console.log('✓ widget runtime-requirements check passed');
-  console.log(`  ${sigs.length} widgets · ${neededNonCss.length} uicore paths all exposed · runtimeNeeds match footprint · ${allUnknown.length} accepted-unknown deps`);
+  console.log(`  ${sigs.length} widgets · ${exposed.size} uicore paths served · runtimeNeeds match footprint · ${allUnknown.length} accepted-unknown deps`);
   console.log(`  MUI surface: ${muiExposed.size} exposed, ${muiUnion.length} imported, all resolved`);
   if (staleAccepted.length) {
     console.log(`  note: ${staleAccepted.length} baseline dep(s) no longer imported (prunable via --update-baseline): ${staleAccepted.join(', ')}`);
@@ -159,14 +155,8 @@ for (const s of sigs) {
 
 const listOr = (items, mark) => (items.length ? items.map((p) => `  ${mark} ${p}`).join('\n') : '  (none)');
 
-console.log('\n=== Drift: uicore paths needed vs the served runtime surface ===\n');
-console.log(`needed (non-CSS): ${neededNonCss.length}   exposed: ${exposed.size}`);
-console.log('\nMISSING (imported by ≥2 widgets, not exposed → would duplicate across bundles):');
-console.log(listOr(missing, '✗'));
-console.log('\nLOCALIZED (single-consumer, not exposed → bundled into its one widget, fine):');
-console.log(listOr(localized, '·'));
-console.log('\nUNUSED (exposed, no widget imports it → candidate to drop):');
-console.log(listOr(unused, '–'));
+console.log('\n=== uicore surface served by the runtime ===\n');
+console.log(`  ${exposed.size} paths: every uicore path a widget imports, plus UICORE_ALWAYS_SERVED`);
 
 console.log('\n=== Drift: @mui/@emotion specifiers needed vs the served MUI surface ===\n');
 console.log(`imported: ${muiUnion.length}   exposed: ${muiExposed.size}`);

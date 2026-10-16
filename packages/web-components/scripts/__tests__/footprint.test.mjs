@@ -7,7 +7,6 @@ import {
   sharedSpecifiers,
 } from '../footprint.mjs';
 import {
-  UICORE_NEVER_SERVED,
   UICORE_ALWAYS_SERVED,
   FRAMEWORK_SERVED,
   SIDE_EFFECT_SERVED,
@@ -26,15 +25,13 @@ test('pkgNameOf extracts the package name from a specifier', () => {
 
 const sig = (uicore, muiSpecs = []) => ({ uicore, muiSpecs });
 
-test('deriveUicoreSurface: consumed non-CSS paths, minus never-served, plus always-served, sorted', () => {
-  const never = [...UICORE_NEVER_SERVED][0];
+test('deriveUicoreSurface: consumed non-CSS paths, plus always-served, sorted', () => {
   const sigs = [
-    sig(['openstack-uicore-foundation/lib/components/clock', never]),
+    sig(['openstack-uicore-foundation/lib/components/clock']),
     sig(['openstack-uicore-foundation/lib/components/css/x.css']),
   ];
   const surface = deriveUicoreSurface(sigs);
   assert.ok(surface.includes('openstack-uicore-foundation/lib/components/clock'));
-  assert.ok(!surface.includes(never), 'never-served path must be excluded');
   assert.ok(!surface.some((p) => p.includes('/css/')), 'css paths must be excluded');
   for (const p of UICORE_ALWAYS_SERVED) assert.ok(surface.includes(p), `${p} must always be served`);
   assert.deepEqual(surface, [...surface].sort());

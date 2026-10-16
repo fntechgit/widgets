@@ -69,10 +69,6 @@ the declaration or `--check` fails.
 
 `analyze-widgets.mjs --check` (the CI conscience) fails on:
 
-- **uicore path drift** — a uicore submodule imported but outside the served
-  runtime surface (its import-map resolution would fail). Consumer-count aware:
-  a path used by ≥2 widgets must be served; a single-consumer path is bundled
-  into its one widget.
 - **MUI barrel roots** — a bare whole-package `@mui/*` import (the subpath
   surface itself is derived from the graphs, so it cannot drift — see
   [SHARED-MUI-RUNTIME.md](./SHARED-MUI-RUNTIME.md)).

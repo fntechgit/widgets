@@ -31,13 +31,7 @@ import {
   BUILD_ACTIONABLE,
   DECLARED_ONLY,
 } from './policy.mjs';
-import {
-  baseOptions,
-  widgetEntry,
-  mui5PinPlugin,
-  nodePolyfills,
-  uicorePinPlugin,
-} from './plugins.mjs';
+import { baseOptions, widgetEntry, bundleEverythingPlugins } from './plugins.mjs';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 // The widgets package's install location — resolved, not assumed as a
@@ -98,7 +92,7 @@ async function discoverGraph(name) {
     minify: false,
     define: { 'process.env.NODE_ENV': '"development"' },
     logLevel: 'silent',
-    plugins: [mui5PinPlugin, nodePolyfills, uicorePinPlugin],
+    plugins: bundleEverythingPlugins(),
   });
   return result.metafile;
 }

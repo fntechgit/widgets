@@ -5,7 +5,7 @@
  */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { promises as fs } from 'node:fs';
+import { promises as fs, existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { polyfillNode } from 'esbuild-plugin-polyfill-node';
 import { STUBBED_NODE_BUILTINS, POLYFILLED_NODE_BUILTINS } from './policy.mjs';
@@ -64,8 +64,44 @@ const vendorAlias = {
 // alongside this package's react, so pnpm materializes the coherent v5 set in
 // this package's own node_modules — the only place versions are declared and
 // therefore deterministic. Imports from INSIDE the MUI/emotion trees resolve
-// naturally (each package keeps its nested v5 copies; no cross-version mixing).
+// from the importer (each package keeps its nested v5 copies; no cross-version
+// mixing).
+//
+// Every @mui file lands on its package's ES-module build. MUI 5 ships each
+// package twice with no `exports` map, so esbuild takes the CommonJS build for
+// a require() (uicore require()s MUI parts) and for deep paths with no
+// `module` field (material imports @mui/system/colorManipulator). One package
+// from both builds holds two copies of its React contexts: a Select's outline
+// reads a different FormControlContext than its FormControl. assertOneMuiBuild
+// fails a build that mixes them.
 const isMuiInternal = (importer) => /[\\/]\.pnpm[\\/]@(mui|emotion)\+/.test(importer || '');
+
+// Each MUI package's build folders, from its package.json: `main` names the
+// CommonJS build and `module` the ES-module build ('' is the package root).
+// material keeps CommonJS in node/; system keeps ES modules in esm/.
+const muiBuildDirs = new Map();
+const buildDirsOf = (pkgDir) => {
+  if (!muiBuildDirs.has(pkgDir)) {
+    const pkg = JSON.parse(readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+    const dirOf = (file) => path.posix.dirname(path.posix.normalize(file)).replace(/^\.$/, '');
+    muiBuildDirs.set(pkgDir, pkg.main && pkg.module ? { cjs: dirOf(pkg.main), esm: dirOf(pkg.module) } : null);
+  }
+  return muiBuildDirs.get(pkgDir);
+};
+
+/** The same module in the package's ES-module build, when the file is in its CommonJS build. */
+export function esmBuildFile(file) {
+  const m = file.match(/^(.*[\\/]node_modules[\\/]@mui[\\/][^\\/]+)[\\/](.+)$/);
+  const dirs = m && buildDirsOf(m[1]);
+  if (!dirs) return file;
+  const rel = m[2].split(path.sep).join('/');
+  const under = (dir) => dir !== '' && rel.startsWith(`${dir}/`);
+  const inCommonJs = dirs.cjs === '' ? !under(dirs.esm) : under(dirs.cjs);
+  if (!inCommonJs) return file;
+  const inner = dirs.cjs === '' ? rel : rel.slice(dirs.cjs.length + 1);
+  const twin = path.join(m[1], dirs.esm, inner);
+  return existsSync(twin) ? twin : file;
+}
 
 export const mui5PinPlugin = {
   name: 'mui5-pin',
@@ -87,17 +123,45 @@ export const mui5PinPlugin = {
     });
     build.onResolve({ filter: /^@(mui|emotion)\// }, async (args) => {
       if (args.pluginData?.mui5) return null; // recursion guard for our re-resolve
-      if (isMuiInternal(args.importer)) return null;
+      const internal = isMuiInternal(args.importer);
+      const mui = args.path.startsWith('@mui/');
+      if (internal && !mui) return null;
       const r = await build.resolve(args.path, {
         kind: args.kind,
-        resolveDir: pkgRoot,
+        resolveDir: internal ? args.resolveDir : pkgRoot,
         pluginData: { mui5: true },
       });
       if (r.errors.length) return null; // unknown subpath → let esbuild fall back
-      return { path: r.path, external: r.external };
+      // A require() of an ES-module file gets its exports with __esModule
+      // set, so Babel's interop still finds `default`.
+      return { path: esmBuildFile(r.path), external: r.external };
     });
   },
 };
+
+/**
+ * Throws when a bundle holds a MUI package from both its ES-module and
+ * CommonJS builds, by each metafile input's detected `format` (folder names
+ * differ per package). build.mjs runs it on every pass, so it also covers a
+ * widget build that does not load mui5PinPlugin.
+ */
+export function assertOneMuiBuild(metafile, label) {
+  const builds = new Map(); // package → { esm, cjs: one CommonJS file }
+  for (const [file, { format }] of Object.entries(metafile.inputs)) {
+    const name = file.match(/node_modules[\\/]@mui[\\/]([^\\/]+)[\\/]/)?.[1];
+    if (!name || !format) continue;
+    const b = builds.get(name) ?? {};
+    if (format === 'cjs') b.cjs ??= file;
+    else b.esm = true;
+    builds.set(name, b);
+  }
+  const mixed = [...builds].filter(([, b]) => b.esm && b.cjs);
+  if (mixed.length === 0) return;
+  throw new Error(
+    `${label}: MUI packages bundled from both their ES-module and CommonJS builds: ` +
+      mixed.map(([name, b]) => `@mui/${name} (e.g. ${b.cjs})`).join('; '),
+  );
+}
 
 // my-tickets ships its own MUI theme (CustomTheme) that sets no fontFamily, so
 // its MUI text falls back to Roboto — and, being the inner ThemeProvider, it
@@ -198,6 +262,13 @@ export const baseOptions = () => ({
   inject: [],
   logLevel: 'warning',
 });
+
+/**
+ * The plugins of a pass that bundles every import itself, with nothing left
+ * external: the shared runtime, and the analyzer's graph discovery, which
+ * needs each widget's whole graph.
+ */
+export const bundleEverythingPlugins = () => [mui5PinPlugin, nodePolyfills, uicorePinPlugin];
 
 // The per-widget entry is pure boilerplate — inject React/createRoot and
 // register the custom element from the widget's shared `manifest` export. The

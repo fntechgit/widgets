@@ -88,7 +88,7 @@ export const RULES = [
   { id: 'shim:elementSymbol',    pkg: ['pure-react-carousel'],                       note: 'bundled deepmerge checks the old react.element $$typeof → crash on mount' },
   { id: 'bridge:tooltip',        pkg: ['react-tooltip'],                             note: 'react-tooltip@3 scans document for [data-tip], shadow-blind' },
   { id: 'quirk:stripeSlot',      pkg: ['@stripe/react-stripe-js', '@stripe/stripe-js'], note: 'Stripe Elements cannot mount in a shadow root — light-DOM slot workaround' },
-  { id: 'pin:mui5',              prefix: ['@mui/', '@emotion/'],                     note: 'v5-era MUI/emotion (dist or kit wrapTree) → pin bundle to the build package MUI 5 (mui5PinPlugin)' },
+  { id: 'pin:mui5',              prefix: ['@mui/', '@emotion/'],                     note: 'v5-era MUI/emotion (dist or kit wrapTree) → pin bundle to the build package MUI 5, ES-module build (mui5PinPlugin)' },
   { id: 'legacy:react-bootstrap', pkg: ['react-bootstrap'],                          note: 'legacy childContext (removed in React 19) + Bootstrap vendor CSS' },
   { id: 'stub:node',             pkg: ['@react-pdf/renderer'],                       note: 'pulls Node built-ins (fs/zlib/…) → needs the browser polyfills (nodePolyfills) in the wc build' },
   { id: 'quirk:swalDeadEnd',     pkg: ['sweetalert2'],                               note: 'sweetalert2 aliased to the widget-notify host shim (lib/compat/uicore-swal) — the ~78 KB lib is not bundled' },

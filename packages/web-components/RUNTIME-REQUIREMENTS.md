@@ -36,7 +36,7 @@ Three tokens, each mapping to one build plugin:
 
 | token | plugin | what it does |
 |---|---|---|
-| `pin:mui5` | `mui5PinPlugin` | v5-era MUI/emotion → pin to the build package's MUI 5 tree; in shared builds the served `@mui/*`/`@emotion/*` surface stays bare and resolves through the import map — see [SHARED-MUI-RUNTIME.md](./SHARED-MUI-RUNTIME.md) |
+| `pin:mui5` | `mui5PinPlugin` | v5-era MUI/emotion → pin to the build package's MUI 5 tree, every `@mui` file on its package's ES-module build; in shared builds the served `@mui/*`/`@emotion/*` surface stays bare and resolves through the import map — see [SHARED-MUI-RUNTIME.md](./SHARED-MUI-RUNTIME.md) |
 | `stub:node` | `nodePolyfills` | dist pulls Node built-ins (fs/zlib/…) → browser polyfills/stubs (esbuild-plugin-polyfill-node) |
 | `quirk:myTicketsFont` | `myTicketsFontPlugin` | ships its own MUI theme with no `fontFamily` → build patches the site font in (behavioral; not import-visible) |
 

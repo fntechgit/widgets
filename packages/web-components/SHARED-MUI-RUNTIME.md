@@ -70,6 +70,13 @@ enters the served surface.
   attach inside the shadow.
 - **`@mui/system` / `@mui/material/styles`** live solely in the chunk, so theme +
   `styled` are coherent.
+- **One build of each MUI package.** MUI 5 ships every package twice (ES
+  modules and CommonJS) with no `exports` map, and each build holds its own
+  React contexts: a Select from one build never sees the value its
+  FormControl from the other holds. `mui5PinPlugin` lands every `@mui` file on
+  the ES-module build, including uicore's `require()` calls and material's deep
+  `@mui/system/*` imports, and every build pass fails when a bundle mixes the
+  two (`assertOneMuiBuild` in `scripts/plugins.mjs`).
 - Widgets still create their **own** theme objects (via `WidgetThemeProvider`); sharing
   the MUI *code* does not force a shared *theme*.
 

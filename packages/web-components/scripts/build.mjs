@@ -27,13 +27,13 @@ import { readDeclaredNeeds, analyzeFleet, sharedSpecifiers } from './footprint.m
 import { WIDGETS, UICORE_IMPORT_OVERRIDES } from './policy.mjs';
 import { probeModules, entrySource, chunkName, importMapFor } from './runtime-entries.mjs';
 import {
-  nodePolyfills,
-  mui5PinPlugin,
   sharedExternals,
   uicorePinPlugin,
   selectPlugins,
   baseOptions,
+  bundleEverythingPlugins,
   widgetEntry,
+  assertOneMuiBuild,
 } from './plugins.mjs';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
@@ -115,7 +115,7 @@ async function buildRuntime() {
     entryPoints.push({ in: file, out: chunkName(spec) });
   }
 
-  await esbuild.build({
+  const { metafile } = await esbuild.build({
     ...base,
     entryPoints,
     format: 'esm',
@@ -125,8 +125,10 @@ async function buildRuntime() {
     // The entries' `__ns.default` runtime check is intentionally "statically
     // undefined" for pure-ESM modules — that's the branch the ternary handles.
     logOverride: { 'import-is-undefined': 'silent' },
-    plugins: [mui5PinPlugin, nodePolyfills, uicorePinPlugin],
+    metafile: true,
+    plugins: bundleEverythingPlugins(),
   });
+  assertOneMuiBuild(metafile, 'runtime');
 
   // The import map — the host inlines this in its document (first in body)
   // before any widget module loads.
@@ -146,7 +148,13 @@ async function buildRuntime() {
 }
 
 async function runBuild(label, opts) {
-  await esbuild.build({ ...base, ...opts, plugins: [...(opts.plugins ?? []), uicorePinPlugin] });
+  const { metafile } = await esbuild.build({
+    ...base,
+    ...opts,
+    metafile: true,
+    plugins: [...(opts.plugins ?? []), uicorePinPlugin],
+  });
+  assertOneMuiBuild(metafile, label);
   await report(opts.outfile, label);
 }
 

@@ -21,7 +21,7 @@ for other consumers / what containment gets deleted once shipped / status**.
 ## Version strategy (the headline constraint)
 
 - The widget lane is pinned to uicore's **v4.x line** (`v4.x` branch,
-  currently `4.2.34`, React peer ^16.6). Every widget's declared uicore
+  currently `4.2.39`, React peer ^16.6). Every widget's declared uicore
   range is 4.x (my-orders `4.2.8`, reg-lite `4.2.34`, full-schedule
   `^4.0.6` in deps / `^4.1.23` peer, lite `^4.0.7` deps / `^4.0.12`
   peer, feedback `^4.0.7`). The host itself imports **zero** uicore —
@@ -232,11 +232,8 @@ resurfacing as "unexplained."
   call the injected handlers when set. `configureUicore()` (this package's
   `src/lib/uicore-host.ts`) calls all three, reading the `HostConfig` and
   `HostAuth` ports, in the host graph and in the web-component shared
-  runtime. This package pins uicore npm 4.2.34, which does not have the
-  setters; hosts that need them override the dependency to the fork build
-  (the reference host's `deploy` overlay uses
-  `github:gcutrini/openstack-uicore-foundation#deploy`) until uicore 4.2.35
-  ships the setters on npm. The reference host's
+  runtime. The setters are on npm from uicore 4.2.39 (the token resolver
+  from 4.2.36), the version this package pins. The reference host's
   `src/__tests__/config/uicore-install.test.ts`
   fails on an installed uicore without them. Direct `getIdToken` / `storeAuthInfo`
   imports are not covered by the setters; they are uicore's own localStorage
@@ -267,7 +264,7 @@ resurfacing as "unexplained."
   defaulting to current behavior → non-breaking.
 - **Containment (implemented)**: `configureUicore()`
   (this package's `src/lib/uicore-host.ts`) registers an `authErrorHandler`
-  through uicore's `setAuthHandlers` (fork branch, see entry 4). uicore's
+  through uicore's `setAuthHandlers` (see entry 4). uicore's
   `utils/actions` calls it for 401/403 instead of its own `doLogin` /
   `initLogOut` flows; the handler raises the host's widget-auth-error event
   and `<WidgetAuthErrorDialog>` owns the treatment (message first; login modal

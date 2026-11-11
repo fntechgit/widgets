@@ -59,7 +59,7 @@ The widgets covered by this document:
 | `event-feedback-widget` | 2.0.1 | Post-session feedback form |
 | `my-orders-tickets-widget` | 1.0.18 | Order + ticket management, receipt PDF |
 | `summit-registration-lite` | 7.0.10 | Ticket-purchase flow with Stripe |
-| `openstack-uicore-foundation` | 4.2.34 | Shared inputs (dropdown, checkbox, text, etc.), Clock context, IDP helpers |
+| `openstack-uicore-foundation` | 4.2.39 | Shared inputs (dropdown, checkbox, text, etc.), Clock context, IDP helpers |
 
 Most are legacy React 16 / Redux 4.x class-heavy code, pre-bundled by webpack years ago, distributed as pre-built `dist` bundles with no TypeScript declarations. Their `dist` peer ranges confirm it: the seven schedule/speaker/feedback widgets and `summit-registration-lite` all peer `react@^16`. The exception is `my-orders-tickets-widget`, built for **React 18** (`react@^18.2`, MUI-based) though still Redux-backed — so "React 16" is the dominant lineage, not a uniform one.
 

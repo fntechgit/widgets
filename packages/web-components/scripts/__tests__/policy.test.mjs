@@ -14,7 +14,10 @@ const require = createRequire(import.meta.url);
 // workspace root install to anchor pnpm's peer materialization, and an auto-installed
 // peer can resolve to an incompatible copy.
 const EXCLUDED = new Map([
-  // (none today)
+  [
+    'pdfmake',
+    'optional peer; only lib/utils/pdf uses it. Declare it when a widget imports that module.',
+  ],
 ]);
 
 // Both uicore consumers must declare the full peer set: this package for the

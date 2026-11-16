@@ -42,10 +42,9 @@ cache + react). Bare package roots are barrels and stay local; other
 so the surface cannot drift from what the code imports.
 
 The served surface carries **no bare `@mui` barrels**: my-tickets'
-`@mui/material` barrel was subpath-fixed upstream (released in 1.0.18);
-full-schedule's `@mui/base` fix is merged but unreleased, so its dist still
-bundles that one barrel locally (baselined in `acceptedMuiMissing`) — it never
-enters the served surface.
+`@mui/material` barrel was subpath-fixed upstream (released in 1.0.18), and
+full-schedule's `@mui/base` barrel likewise (released in 3.1.4), so no widget
+dist bundles an MUI barrel locally and `acceptedMuiMissing` is empty.
 
 ## Build mechanics
 

@@ -280,8 +280,8 @@ importers:
         specifier: 4.7.0
         version: 4.7.0
       full-schedule-widget:
-        specifier: 3.1.3
-        version: 3.1.3(066c0fde64a1f190dc5b45853d219c17)
+        specifier: 3.1.4
+        version: 3.1.4(066c0fde64a1f190dc5b45853d219c17)
       history:
         specifier: ^4.7.2
         version: 4.10.1
@@ -2418,8 +2418,8 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  full-schedule-widget@3.1.3:
-    resolution: {integrity: sha512-udF/mEJVFJ779XlZV0liJE5eSE+xMnYEnouNjpjolNVPZj93QnbegkJB3/oioJNa0oqm142RVPXh3q3A2WBTeQ==}
+  full-schedule-widget@3.1.4:
+    resolution: {integrity: sha512-UZKd55BC1HpJTMacVyRSTrjHK5HEHAZNA1YKDbGvj+lus/TzIOdSy93+1DQki+lWE9SkbWXQ6qw7FMGYydnZ5Q==}
     peerDependencies:
       awesome-bootstrap-checkbox: ^1.0.1
       browser-tabs-lock: ^1.2.15
@@ -7034,7 +7034,7 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  full-schedule-widget@3.1.3(066c0fde64a1f190dc5b45853d219c17):
+  full-schedule-widget@3.1.4(066c0fde64a1f190dc5b45853d219c17):
     dependencies:
       '@mui/base': 5.0.0-alpha.127(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@react-pdf/renderer': 3.4.5(encoding@0.1.13)(react@19.2.8)

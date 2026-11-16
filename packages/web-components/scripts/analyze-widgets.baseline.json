@@ -38,7 +38,5 @@
     "schedule-lite:react-bootstrap",
     "speakers:react-bootstrap"
   ],
-  "acceptedMuiMissing": [
-    "@mui/base"
-  ]
+  "acceptedMuiMissing": []
 }

@@ -72,7 +72,7 @@ independent of the major.
 | react-bootstrap | `0.33.1` | #1, #2 (removed legacy context) | lite-schedule (local); uicore peers `^0.31.5` | lite-schedule (Entry 2) |
 | react-transition-group | `1.x` bundled + `2.9.0` | #5 `componentWillMount` | lite-schedule + react-select | falls out of the two above |
 | pure-react-carousel | bundled | none (crash, shimmed) | speakers-widget | speakers-widget |
-| full-schedule own code | `3.1.3` | #4 `componentWillMount Schedule`, #7 JSX transform | — | full-schedule dist rebuild |
+| full-schedule own code | `3.1.4` | #4 `componentWillMount Schedule`, #7 JSX transform | — | full-schedule dist rebuild |
 | react-scroll | `1.9.3` | #8 `target Element not found` — **benign** | full-schedule | leave |
 | use-fit-text | `2.4.0` | #9 `minFontSize` INFO — **benign** | uicore | leave |
 | react-stars `2.2.5` + react-star-ratings `2.3.0` | both | none | feedback / uicore | **duplicate** — consolidate opportunistically |
@@ -101,7 +101,7 @@ resurfacing as "unexplained."
 
 ## Entries
 
-### 1. full-schedule: null/optional-safe `loggedUser` derivation — PR #58 (open)
+### 1. full-schedule: null/optional-safe `loggedUser` derivation — PR #58 (released in 3.1.4)
 - **Repo**: `fntechgit/full-schedule-widget`, `src/reducer.js:244`.
   Introduced upstream in `d8c1636` (RSVP feature, PR #52).
 - **Resolves**: crash on logout (`null` profile dereferenced) and
@@ -126,10 +126,11 @@ resurfacing as "unexplained."
 - **We delete**: nothing (the discarded remount workaround stays out);
   restores the live login/logout reactivity as designed.
 - **Status**: **[PR #58](https://github.com/fntechgit/full-schedule-widget/pull/58)
-  open** — guards both `UPDATE_LOGGED_USER` and `LOAD_INITIAL_VARS` and
-  adds a 6-test `src/__test__/reducer.test.js` regression file. Supersedes
-  the earlier parked `fix/update-logged-user-null-safe` branch (which
-  covered only `UPDATE_LOGGED_USER`). Awaiting merge → publish → pin 3.1.4.
+  released in 3.1.4 and pinned** — guards both `UPDATE_LOGGED_USER` and
+  `LOAD_INITIAL_VARS` and adds a 6-test `src/__test__/reducer.test.js`
+  regression file. Supersedes the earlier parked
+  `fix/update-logged-user-null-safe` branch (which covered only
+  `UPDATE_LOGGED_USER`).
 
 - **Host shim removal condition (spans entries 1–3)**: the reference
   host's `src/widgets/shared/useWidgetSafeProfile.ts` defaults
@@ -137,7 +138,7 @@ resurfacing as "unexplained."
   full / lite / upcoming — the same `missing field → []` guard these three
   PRs add in the reducer. Its **array-defaulting is removable only once all
   three reducer guards ship and are pinned** — [#58](https://github.com/fntechgit/full-schedule-widget/pull/58)
-  (full), [upcoming #23](https://github.com/fntechgit/upcoming-events-widget/pull/23),
+  (full, pinned in 3.1.4), [upcoming #23](https://github.com/fntechgit/upcoming-events-widget/pull/23),
   [lite #12](https://github.com/fntechgit/lite-schedule-widget/pull/12) —
   since it guards whichever widget's fix hasn't landed yet. Its
   optimistic-schedule merge role (`useWidgetSafeProfile`) is separate and
@@ -448,8 +449,8 @@ across the widgets we bundle and fixed at the source. These shrink the shared
 served MUI surface (see [SHARED-MUI-RUNTIME.md](../web-components/SHARED-MUI-RUNTIME.md)) and
 the shared runtime:
 - **full-schedule** `@mui/base` → `@mui/base/Modal` —
-  [PR #59](https://github.com/fntechgit/full-schedule-widget/pull/59) (merged;
-  awaiting release + pin).
+  [PR #59](https://github.com/fntechgit/full-schedule-widget/pull/59) (released
+  in 3.1.4, pinned).
 - **my-orders-tickets** `@mui/material` barrel → per-component subpaths across 52
   files — [PR #110](https://github.com/fntechgit/my-orders-tickets-widget/pull/110)
   (released in 1.0.18, pinned).
@@ -458,11 +459,6 @@ the shared runtime:
   [PR #323](https://github.com/OpenStackweb/openstack-uicore-foundation/pull/323)
   (merged). The lodash half alone removes ~30 KB gzip from the shared runtime (whole
   lodash was bundled for a single `debounce`).
-- **Until #59 is released**: full-schedule imports the `@mui/base` barrel and
-  bundles its own copy of it. The `acceptedMuiMissing` list in
-  `analyze-widgets.baseline.json` (`@mui/base`) accepts that barrel so
-  `analyze-widgets.mjs --check` passes; drop the entry when the released dist
-  lands.
 - **Guard**: `analyze-widgets.mjs --check` now flags any bare-root import of a
   subpath-capable lib; the pre-existing ones it surfaced (`react-bootstrap` in
   speakers/live-event/schedule-lite/schedule-full, `lodash` in schedule-filters)
@@ -543,8 +539,7 @@ the shared runtime:
 Ranked by readiness, blast radius, and the release-batching noted above:
 
 1. **Entry 1** (S) — [PR #58](https://github.com/fntechgit/full-schedule-widget/pull/58)
-   open (both cases + regression tests); review/merge → publish 3.1.4 →
-   pin. The reducer-only sibling guards are open too —
+   released in 3.1.4 and pinned. The reducer-only sibling guards are still open —
    [upcoming #23](https://github.com/fntechgit/upcoming-events-widget/pull/23),
    [lite #12](https://github.com/fntechgit/lite-schedule-widget/pull/12) —
    and merging all three clears `widget-safe-profile`'s array-default and
@@ -567,10 +562,9 @@ Ranked by readiness, blast radius, and the release-batching noted above:
 11. **Entry 14** (S) — the barrel→subpath PRs
     ([#59](https://github.com/fntechgit/full-schedule-widget/pull/59) and
     [#110](https://github.com/fntechgit/my-orders-tickets-widget/pull/110),
-    #59 merged awaiting release + pin, #110 released in 1.0.18 and pinned;
+    #59 released in 3.1.4 and pinned, #110 released in 1.0.18 and pinned;
     [#323](https://github.com/OpenStackweb/openstack-uicore-foundation/pull/323)
-    merged); high value/low risk — merge → publish → pin → drop
-    `acceptedMuiMissing`.
+    merged); `acceptedMuiMissing` is empty.
 12. **Entry 12** (S) — reg-lite RadioList/Dropdown barrel→subpath
     ([#156](https://github.com/fntechgit/summit-registration-lite/pull/156),
     merged, awaiting release + pin); the served-surface barrel drop already landed.

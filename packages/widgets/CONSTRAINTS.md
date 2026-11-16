@@ -50,7 +50,7 @@ The widgets covered by this document:
 
 | Package | Version | What it does |
 |---|---|---|
-| `full-schedule-widget` | 3.1.3 | Full agenda view with filters |
+| `full-schedule-widget` | 3.1.4 | Full agenda view with filters |
 | `lite-schedule-widget` | 3.0.3 | Compact schedule (with `yourSchedule=true` for personal) |
 | `schedule-filter-widget` | 3.0.8 | Filter panel |
 | `upcoming-events-widget` | 3.0.7 | Next-N events preview |

@@ -405,9 +405,7 @@ resurfacing as "unexplained."
 - **We delete**: nothing on our side (the slot lives in the widget). Registration
   is in the web-component `WIDGETS` list on the strength of it.
 - **Status**: [PR #159](https://github.com/fntechgit/summit-registration-lite/pull/159)
-  (open, changes requested). The deploy overlay builds registration from the
-  fork branch that carries it (`gcutrini/summit-registration-lite#deploy/wc-registration`)
-  until it is released.
+  merged, released in 7.0.11, pinned here.
 
 ### 12. reg-lite: import RadioList/Dropdown by subpath, not the uicore barrel
 - **Repo**: `fntechgit/summit-registration-lite`, `personal-information/index.js`
@@ -424,9 +422,9 @@ resurfacing as "unexplained."
   `inputs/radio-list`; `inputs/dropdown` already exposed) — a large drop off the
   once-loaded shared runtime.
 - **Status**: [PR #156](https://github.com/fntechgit/summit-registration-lite/pull/156)
-  merged; awaiting a widget release + version pin here. The served runtime
-  surface already carries the `inputs/dropdown` and `inputs/radio-list`
-  subpaths and no `lib/components` barrel.
+  merged, released in 7.0.11, pinned here. The served runtime surface carries
+  the `inputs/dropdown` and `inputs/radio-list` subpaths and no
+  `lib/components` barrel.
 
 ### 13. my-orders-tickets: CustomTheme sets no fontFamily
 - **Repo**: `fntechgit/my-orders-tickets-widget`, `src/components/CustomTheme.js`.

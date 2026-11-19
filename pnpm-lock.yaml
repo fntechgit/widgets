@@ -6,7 +6,6 @@ settings:
 
 overrides:
   react-star-ratings>react: 18.3.1
-  summit-registration-lite: github:gcutrini/summit-registration-lite#deploy/wc-registration
 
 importers:
 
@@ -379,8 +378,8 @@ importers:
         specifier: 4.0.2
         version: 4.0.2(858f0b8ae166fa5f3e5e875704faceab)
       summit-registration-lite:
-        specifier: github:gcutrini/summit-registration-lite#deploy/wc-registration
-        version: https://codeload.github.com/gcutrini/summit-registration-lite/tar.gz/b50bd612f4fbc08034893cea475326a1d28d161e(c5a22b9be68ff8b7c402933293967bf6)
+        specifier: 7.0.11
+        version: 7.0.11(c5a22b9be68ff8b7c402933293967bf6)
       superagent:
         specifier: ^3.8.3
         version: 3.8.3
@@ -4126,9 +4125,8 @@ packages:
   stylis@4.4.0:
     resolution: {integrity: sha512-5Z9ZpRzfuH6l/UAvCPAPUo3665Nk2wLaZU3x+TLHKVzIz33+sbJqbtrYoC3KD4/uVOr2Zp+L0LySezP9OHV9yA==}
 
-  summit-registration-lite@https://codeload.github.com/gcutrini/summit-registration-lite/tar.gz/b50bd612f4fbc08034893cea475326a1d28d161e:
-    resolution: {tarball: https://codeload.github.com/gcutrini/summit-registration-lite/tar.gz/b50bd612f4fbc08034893cea475326a1d28d161e}
-    version: 7.0.10
+  summit-registration-lite@7.0.11:
+    resolution: {integrity: sha512-0OkIR6APgrbcnXsXMA4JWta9zeL5bfU/IxfcPEqB4Rl6HNJzRvDcbfs2sM3s9+oPNeBd0k75nh3b5bwEQCqVoQ==}
     peerDependencies:
       awesome-bootstrap-checkbox: ^1.0.1
       browser-tabs-lock: ^1.2.15
@@ -9231,7 +9229,7 @@ snapshots:
 
   stylis@4.4.0: {}
 
-  summit-registration-lite@https://codeload.github.com/gcutrini/summit-registration-lite/tar.gz/b50bd612f4fbc08034893cea475326a1d28d161e(c5a22b9be68ff8b7c402933293967bf6):
+  summit-registration-lite@7.0.11(c5a22b9be68ff8b7c402933293967bf6):
     dependencies:
       '@emotion/react': 11.14.0(@types/react@19.2.18)(react@19.2.8)
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.8))(@types/react@19.2.18)(react@19.2.8)

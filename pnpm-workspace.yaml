@@ -7,4 +7,3 @@ packages:
 # standalone build can't inline a second React.
 overrides:
   'react-star-ratings>react': 18.3.1
-  'summit-registration-lite': github:gcutrini/summit-registration-lite#deploy/wc-registration

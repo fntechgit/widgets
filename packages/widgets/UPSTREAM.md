@@ -477,6 +477,9 @@ the shared runtime:
 - **Future**: the spinner is fixed (MUI `CircularProgress`). If a widget ever needs
   a different loader, the shim could take the loader component as a prop/port
   rather than hardcoding it.
+- **reg-lite**: its root `.summit-registration-lite` is not positioned, so the
+  registration widget's styles add `:host { position: relative; isolation: isolate; }`
+  to keep the backdrop over the form. Upstream, reg-lite could position its root.
 - **Status**: contained in the shared runtime; no upstream change needed — this is deliberate
   host styling of a uicore component, not a uicore bug.
 

@@ -8,6 +8,7 @@
  * Used for CSS that has no generated module:
  *   - `react-tooltip@3` inlines its CSS in its JS bundle
  *   - `widget-buttons` is our own supplemental `.button` baseline
+ *   - an inline `:host` rule keeps the MUI Backdrop loader over the form
  *
  * Rationale for each sheet:
  *   Bootstrap 3 + Font Awesome 4 — documented as required externals in
@@ -37,4 +38,13 @@ import { sheet as regLite } from '../../lib/vendor-css/summit-registration-lite'
 
 export const registrationSheets = [bootstrap, fontAwesome, abcCheckbox, regLite] as const;
 
-export const registrationStyles = [reactTooltipCss, widgetButtonsCss, skeletonCss] as const;
+export const registrationStyles = [
+  reactTooltipCss,
+  widgetButtonsCss,
+  skeletonCss,
+  // reg-lite calls <AjaxLoader relative />, which the runtime serves as our
+  // MUI Backdrop (lib/compat/uicore-ajaxloader). The backdrop is absolutely
+  // positioned and reg-lite's root is not, so without this rule it covers the
+  // whole page and its navbar. This keeps it over the form only.
+  `:host { position: relative; isolation: isolate; }`,
+] as const;

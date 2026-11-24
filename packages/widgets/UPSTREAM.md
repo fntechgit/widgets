@@ -535,6 +535,31 @@ the shared runtime:
   `useId`/`useSyncExternalStore` back-fills are deleted.
 - **Status**: resolved by the runtime's React 18.
 
+### 19. my-orders-tickets: color-token defaults on `:root`
+- **Repo**: `fntechgit/my-orders-tickets-widget`, `src/styles/colors.scss`
+  (imported by every component's `styles.module.scss`).
+- **Resolves**: the sheet sets its own defaults on `:root`
+  (`--color_primary: #000000`, `--color_secondary: #00a2ff`, …) and dark
+  overrides on `html[data-theme="DARK"]` with `!important`. Inside the
+  shadow they match nothing. The drawers, the confirm dialog and the
+  tooltips portal to `<body>`, so the sheet also has to style markup in the
+  page; injected there as is, those blocks match `<html>` and repaint the
+  whole site in the widget's defaults. The sheet also has a page-wide
+  `.MuiTooltip-tooltip { font-size: 0.8em }`.
+- **Change**: drop the `:root` and `html[data-theme]` blocks (the host
+  publishes the tokens, CONSTRAINTS H.2 / U.7), or move them to the
+  widget's own wrapper class; nest the tooltip rule under a widget class.
+  Sites don't publish `--color_success` / `--color_warning`, so keep their
+  defaults as `var()` fallbacks where the ticket-status styles use them.
+- **Contained (implemented)**: the my-tickets manifest sends the sheet to
+  the head through `scopedPortalCssBridge('body', …)` instead of
+  `portalSheets`; inside `@scope`, `:root` and `html` never match.
+  `catalog/my-tickets/vendor-styles.ts` adds the two status-color
+  fallbacks to the sheet.
+  The tooltip rule stays page-wide. Once upstream ships, plain
+  `portalSheets` would work again (and covers browsers without `@scope`).
+- **Status**: contained; needs a my-orders PR.
+
 ## Suggested implementation order
 
 Ranked by readiness, blast radius, and the release-batching noted above:
@@ -575,6 +600,8 @@ Ranked by readiness, blast radius, and the release-batching noted above:
     + `myTicketsFontPlugin`; cosmetic, contained. Batch with #110's my-orders release.
 15. **Entry 16** (S) — upcoming-events propTypes vs store (`widgetLoading` counter,
     `summit` nullable at first render); dev-only warnings; needs a widget PR.
+16. **Entry 19** (S) — my-orders color defaults off `:root`; batch with entry 13's
+    my-orders release.
 
 ## Process per entry
 

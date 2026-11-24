@@ -59,7 +59,12 @@ export interface WidgetManifest {
   readonly vendorSheets?: readonly VendorSheet[];
   /** Hand-authored CSS strings, adopted alongside `vendorSheets`. Must not contain @font-face. */
   readonly inlineStyles?: readonly string[];
-  /** Vendor sheets ALSO injected into document.head — for UI portaled to <body> (MUI poppers). */
+  /**
+   * Vendor sheets ALSO injected into document.head as is — for UI portaled to <body>
+   * (MUI poppers). Only for sheets whose every selector is the widget's own (hashed)
+   * class: a `:root`, `html` or generic rule would apply to the whole page. Such a
+   * sheet goes through `scopedPortalCssBridge` instead.
+   */
   readonly portalSheets?: readonly VendorSheet[];
 
   // ── behavior ────────────────────────────────────────────────

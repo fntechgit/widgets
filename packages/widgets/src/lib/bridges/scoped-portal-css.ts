@@ -11,6 +11,11 @@
  * rule — generic or hashed — only matches inside the container subtree.
  * (@scope: Chrome 118+, Safari 17.4+, Firefox 128+.)
  *
+ * `:root` and `html` rules never match inside a scope, so a sheet's own
+ * color-token defaults (`:root { --color_primary: … }`) can't override the
+ * host's tokens. MUI portals that append straight to `document.body` use
+ * `body` as the container.
+ *
  * `@font-face` registration is handled globally by createWidgetShadow's
  * font-face hoisting to document.head for the same sheets; only class rules (e.g.
  * `.fa { font-family: FontAwesome }`) need to resolve here.
